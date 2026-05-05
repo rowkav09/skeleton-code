@@ -34,6 +34,7 @@ def DisplayErrorCodeInfo():
     "9": "StateError: Cannot assemble before loading",
     "10": "RuntimeError: Program not assembled",
     "11": "RuntimeError: Assembly contains errors"
+    '12': 'Inputerror: Inputted value is not accepted'
   }
 
   choice = input("Enter error code to view: ")
@@ -112,7 +113,22 @@ def LoadFile(SourceCode):
   return SourceCode 
 
 def EditSourceCode(SourceCode): 
-  LineNumber = int(input("Enter line number of code to edit: "))
+    
+  while not valid:
+    LineNumber = int(input("Enter line number of code to edit: "))
+    try:
+        int(LineNumber)
+        try:
+            LineNumber in NumberOfLines
+        except:
+            pass
+        valid = True
+    except:
+        print('Error Code 12')
+    
+        
+  
+  
   print(SourceCode[LineNumber])
   Choice = EMPTY_STRING
   while Choice != "C":
@@ -322,7 +338,9 @@ def ExecuteJMP(Registers, Address):
   Registers[PC] = Address
   return Registers
 
-def ExecuteSKP():
+def ExecuteSKP(Registers):
+    Registers[ACC] += 1
+    Registers = SetFlags(Registers[ACC], Registers)
   return 
 
 def DisplayStack(Memory, Registers):
@@ -381,7 +399,8 @@ def Execute(SourceCode, Memory):
     elif OpCode == "SUB":
       Registers = ExecuteSUB(Memory, Registers, Operand)
     elif OpCode == "SKP":
-      ExecuteSKP()
+      ExecuteSKP(Registers)
+      ExecuteSKP(Registers)
     elif OpCode == "RTN":
       Registers = ExecuteRTN(Memory, Registers)
     if Registers[ERR] == 0:
